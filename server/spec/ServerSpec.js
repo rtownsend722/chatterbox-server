@@ -1,6 +1,10 @@
 var handler = require('../request-handler');
-var expect = require('chai').expect;
+var chai = require('chai');
+var expect = chai.expect;
+var chaiHttp = require('chai-http');
 var stubs = require('./Stubs');
+
+chai.use(chaiHttp);
 
 // Conditional async testing, akin to Jasmine's waitsFor()
 // Will wait for test to be truthy before executing callback
@@ -101,6 +105,44 @@ describe('Node Server Request Listener Function', function() {
     expect(messages[0].username).to.equal('Jono');
     expect(messages[0].message).to.equal('Do my bidding!');
     expect(res._ended).to.equal(true);
+  });
+
+  it('should list all messages on /classes/messages', function(done) {
+    chai.request('http://127.0.0.1:3000')
+      .get('/classes/messages')
+      .end(function(err, res) {
+        expect(res.status).to.equal(200);
+        done();
+      });
+  });
+
+
+  it('should respond with messages that were previously posted', function(done) {
+    chai.request('http://127.0.0.1:3000')
+      .post('/classes/messages')
+      .send({'roomname': 'bedroom', 'username': 'fred', 'text': 'says hi'})
+      .end(function(err, res) {
+        expect(res.status).to.equal(201);
+        expect(JSON.parse(res.text)).to.be.a('object');
+        expect(JSON.parse(res.text)).to.have.property('roomname');
+        expect(JSON.parse(res.text)).to.have.property('username');
+        expect(JSON.parse(res.text)).to.have.property('text');
+        expect(JSON.parse(res.text).username).to.equal('fred');
+        expect(JSON.parse(res.text).roomname).to.equal('bedroom');
+        expect(JSON.parse(res.text).text).to.equal('says hi');
+        done();
+      });
+  });
+
+  it('should respond to an options request', function(done) {
+    chai.request('http://127.0.0.1:3000')
+      .options('/classes/messages')
+      .end(function(err, res) {
+        console.log(res.text);
+        expect(res.status).to.equal(200);
+        expect(res.text).to.equal('Allow: GET, POST, OPTIONS');
+        done();
+      });
   });
 
 

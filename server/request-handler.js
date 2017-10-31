@@ -50,13 +50,16 @@ var handlePost = function(request, response) {
     data = Buffer.concat(data).toString();
     data = JSON.parse(data);
     //push the data into the storage array
+    console.log(data, 'in end');
     storage.push(data);
+    // response.write(JSON.stringify(data));
+    statusCode = 201;
+    console.log('Serving request type ' + request.method + ' for url ' + request.url);
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify(data));
   });
   //statusCode 201 for post successful
-  statusCode = 201;
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  response.writeHead(statusCode, headers);
-  response.end(JSON.stringify(data));
+  // console.log(data, 'after end');
 };
 
 var handleGet = function(request, response) {
