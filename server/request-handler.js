@@ -100,7 +100,7 @@ var requestHandler = function(request, response) {
     } else if (request.method === 'OPTIONS') {
       statusCode = 200;
       response.writeHead(statusCode, headers);
-      response.end();
+      response.end('Allow: GET, POST, OPTIONS');
     } else {
       statusCode = 400;
       response.writeHead(statusCode, headers);

@@ -25,15 +25,31 @@ module.exports = {
     this._postData = postdata;
     this.setEncoding = function() { /* noop */ };
 
+//  request.on('data', function(chunk) {
+//     data.push(chunk);
+//   })
+
+  // var data = [];
+  // request.on('data', function(chunk) {
+  //   data.push(chunk);
+  // })
+  // request.on('end', function() {
+  //   data = Buffer.concat(data).toString();
+  //   data = JSON.parse(data);
+  //   //push the data into the storage array
+  //   storage.push(data);
+  // });
+
     this.addListener = this.on = function(type, callback) {
+      console.log('this is the callback', callback);
       if (type === 'data') {
-        callback(JSON.stringify(this._postData));
+        callback(new Buffer(new Uint8Array(1)));
       }
 
       if (type === 'end') {
         callback();
       }
-
+      return this;
     }.bind(this);
   }
 
