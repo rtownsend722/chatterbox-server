@@ -47,6 +47,7 @@ var app = {
       dataType: 'json',
       success: function (data) {
         // Clear messages input
+        console.log('success!', data);
         app.$message.val('');
 
         // Trigger a fetch to update the messages, pass true to animate
@@ -62,13 +63,13 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
-      data: { order: '-createdAt' },
+      data: {order: '-createdAt'},
       contentType: 'application/json',
       success: function(data) {
         data = JSON.parse(data);
-        console.log(data);
+        // console.log(data);
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+        // if (!data.results || !data.results.length) { return; }
 
         // Store messages for caching later
         app.messages = data.results;
@@ -77,16 +78,16 @@ var app = {
         var mostRecentMessage = data.results[data.results.length - 1];
 
         // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId) {
-          // Update the UI with the fetched rooms
-          app.renderRoomList(data.results);
+        // if (mostRecentMessage.objectId !== app.lastMessageId) {
+        // Update the UI with the fetched rooms
+        app.renderRoomList(data.results);
 
-          // Update the UI with the fetched messages
-          app.renderMessages(data.results, animate);
+        // Update the UI with the fetched messages
+        app.renderMessages(data.results, animate);
 
-          // Store the ID of the most recent message
-          app.lastMessageId = mostRecentMessage.objectId;
-        }
+        // Store the ID of the most recent message
+        // app.lastMessageId = mostRecentMessage.objectId;
+        // }
       },
       error: function(error) {
         console.error('chatterbox: Failed to fetch messages', error);

@@ -13,6 +13,7 @@ module.exports = {
     }.bind(this);
 
     this.end = function(data) {
+      console.log('CALLED THEIR RESPONSE.END', data);
       this._ended = true;
       this._data = data;
     }.bind(this);
