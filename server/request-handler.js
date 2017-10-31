@@ -12,7 +12,41 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+
+
+// { '{"username":"joe","text":"hi","roomname":"lobby"}{"username":"joe","text":"hi","roomname":"lobby"}': '' }
+
+var qs = require('querystring');
+var url = require('url');
+var storage = [];
+
+var handlePost = function(request, response) {
+  //TODO: pass in date and other metadata from the header
+  //parse the data into object form from the JSON string
+  //push the data into the storage array
+  //statusCode 201 for post successful
+};
+
+var handleGet = function(request, response) {
+  //TODO: find a way to order based on the order property
+  //parse the data into object form from the JSON string to get the order property
+  //iterate backwards in our array
+  //append each value to output array
+  //statusCode 200 for post successful
+};
+
 var requestHandler = function(request, response) {
+
+  var data = [];
+
+  if (request.method === 'POST') {
+    request.on('data', function(chunk) {
+      data.push(chunk);
+    }).on('end', function() {
+      data = Buffer.concat(data).toString();
+      console.log(data);
+    });
+  }
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -28,9 +62,13 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-
   // The outgoing status.
-  var statusCode = 200;
+  var statusCode;
+  if (request.url !== '/classes/messages?order=-createdAt') {
+    statusCode = 404;
+  } else {
+    statusCode = 200;
+  }
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
@@ -52,7 +90,28 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+  var message = {
+    username: 'Rebecca',
+    text: 'Hello world!',
+    roomname: 'lobby',
+    objectId: 1
+  };
+  var message2 = {
+    username: 'Brendon',
+    text: 'Hello world!',
+    roomname: 'lobby',
+    objectId: 2
+  };
+
+  //if method isn't post or get
+  response.end(JSON.stringify({results: [message2, message]}));
+/*
+    var message = {
+      username: app.username,
+      text: app.$message.val(),
+      roomname: app.roomname || 'lobby'
+    };
+*/
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -65,9 +124,12 @@ var requestHandler = function(request, response) {
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
 var defaultCorsHeaders = {
+  //TODO, specify cross-origin url for our chat client
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
+
+module.exports.requestHandler = requestHandler;
 
