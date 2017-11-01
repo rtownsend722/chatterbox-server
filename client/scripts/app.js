@@ -11,7 +11,7 @@ var app = {
   friends: {},
   messages: [],
 
-  init: function() {
+  init: () => {
     // Get username
     app.username = window.location.search.substr(10);
 
@@ -36,7 +36,7 @@ var app = {
     }, 3000);
   },
 
-  send: function(message) {
+  send: (message) => {
     app.startSpinner();
 
     // POST the message to the server
@@ -45,27 +45,25 @@ var app = {
       type: 'POST',
       data: JSON.stringify(message),
       dataType: 'json',
-      success: function (data) {
+      success: (data) => {
         // Clear messages input
-        console.log('success!', data);
         app.$message.val('');
 
         // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
       },
-      error: function (error) {
-        console.error('chatterbox: Failed to send message', error);
-      }
+      error: error =>
+        console.error('chatterbox: Failed to send message', error)
     });
   },
 
-  fetch: function(animate) {
+  fetch: (animate) => {
     $.ajax({
       url: app.server,
       type: 'GET',
       data: {order: '-createdAt'},
       contentType: 'application/json',
-      success: function(data) {
+      success: (data) => {
         data = JSON.parse(data);
         // console.log(data);
         // Don't bother if we have nothing to work with
@@ -89,9 +87,8 @@ var app = {
         // app.lastMessageId = mostRecentMessage.objectId;
         // }
       },
-      error: function(error) {
-        console.error('chatterbox: Failed to fetch messages', error);
-      }
+      error: error =>
+        console.error('chatterbox: Failed to fetch messages', error)
     });
   },
 
@@ -140,7 +137,7 @@ var app = {
     app.$roomSelect.val(app.roomname);
   },
 
-  renderRoom: function(roomname) {
+  renderRoom: roomname => {
     // Prevent XSS by escaping with DOM methods
     var $option = $('<option/>').val(roomname).text(roomname);
 
@@ -148,9 +145,9 @@ var app = {
     app.$roomSelect.append($option);
   },
 
-  renderMessage: function(message) {
-    if (!message.roomname) {
-      message.roomname = 'lobby';
+  renderMessage: ({roomname, username, text}) => {
+    if (!roomname) {
+      roomname = 'lobby';
     }
 
     // Create a div to hold the chats
@@ -159,25 +156,25 @@ var app = {
     // Add in the message data using DOM methods to avoid XSS
     // Store the username in the element's data attribute
     var $username = $('<span class="username"/>');
-    $username.text(message.username + ': ').attr('data-roomname', message.roomname).attr('data-username', message.username).appendTo($chat);
+    $username.text(username + ': ').attr('data-roomname', roomname).attr('data-username', username).appendTo($chat);
 
     // Add the friend class
-    if (app.friends[message.username] === true) {
+    if (app.friends[username] === true) {
       $username.addClass('friend');
     }
 
     var $message = $('<br><span/>');
-    $message.text(message.text).appendTo($chat);
+    $message.text(text).appendTo($chat);
 
     // Add the message to the UI
     app.$chats.append($chat);
 
   },
 
-  handleUsernameClick: function(event) {
+  handleUsernameClick: (events) => {
 
     // Get username from data attribute
-    var username = $(event.target).data('username');
+    var username = $(events.target).data('username');
 
     if (username !== undefined) {
       // Toggle friend
@@ -191,7 +188,7 @@ var app = {
     }
   },
 
-  handleRoomChange: function(event) {
+  handleRoomChange: () => {
 
     var selectIndex = app.$roomSelect.prop('selectedIndex');
     // New room is always the first option
@@ -216,7 +213,7 @@ var app = {
     app.renderMessages(app.messages);
   },
 
-  handleSubmit: function(event) {
+  handleSubmit: () => {
     var message = {
       username: app.username,
       text: app.$message.val(),
@@ -229,12 +226,12 @@ var app = {
     event.preventDefault();
   },
 
-  startSpinner: function() {
+  startSpinner: () => {
     $('.spinner img').show();
     $('form input[type=submit]').attr('disabled', 'true');
   },
 
-  stopSpinner: function() {
+  stopSpinner: () => {
     $('.spinner img').fadeOut('fast');
     $('form input[type=submit]').attr('disabled', null);
   }

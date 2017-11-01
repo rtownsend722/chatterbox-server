@@ -22,7 +22,7 @@
 
 app = {
 
-  server: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+  server: 'http://127.0.0.1:3000/classes/messages',
 
   init: function() {
     // Get username
@@ -92,8 +92,8 @@ app = {
     $.ajax({
       type: 'POST',
       url: app.server,
-      data: message,
-      contentType: 'application/json',
+      data: JSON.stringify(message),
+      contentType: 'json',
       success: function(json) {
         message.objectId = json.objectId;
         app.displayMessage(message);
